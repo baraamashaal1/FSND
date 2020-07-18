@@ -12,6 +12,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from flask_migrate import Migrate
 
 # ----------------------------------------------------------------------------#
 # App Config.
@@ -21,6 +22,7 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 # TODO: connect to a local postgresql database
@@ -42,6 +44,11 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    website = db.Column(db.String(300))
+    genres = db.Column(db.ARRAY(db.String(120)))
+    seeking_talent = db.Column(db.Boolean)
+    seeking_description = db.Column(db.Text)
+    show = db.relationship('Show', backref='Venue')
 
 
 class Artist(db.Model):
@@ -57,9 +64,20 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    website = db.Column(db.String(300))
+    seeking_venue = db.Column(db.Boolean)
+    seeking_description = db.Column(db.Text)
+    show = db.relationship('Show', backref='Artist')
 
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+class Show(db.Model):
+    __tablename__ = 'Show'
+
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.DateTime, nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
 
 # ----------------------------------------------------------------------------#
 # Filters.
@@ -139,18 +157,20 @@ def show_venue(venue_id):
     # shows the venue page with the given venue_id
     # TODO: replace with real venue data from the venues table, using venue_id
     data1 = {
-        "id": 1,
-        "name": "The Musical Hop",
-        "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-        "address": "1015 Folsom Street",
-        "city": "San Francisco",
-        "state": "CA",
-        "phone": "123-123-1234",
-        "website": "https://www.themusicalhop.com",
-        "facebook_link": "https://www.facebook.com/TheMusicalHop",
-        "seeking_talent": True,
+        "id": 1,  # exist
+        "name": "The Musical Hop",  # exist
+        "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],  # added
+        "address": "1015 Folsom Street",  # exist
+        "city": "San Francisco",  # exist
+        "state": "CA",  # exist
+        "phone": "123-123-1234",  # exist
+        "website": "https://www.themusicalhop.com",  # added
+        "facebook_link": "https://www.facebook.com/TheMusicalHop",  # exist
+        "seeking_talent": True,  # added
         "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
+        # added
         "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60",
+        # exist
         "past_shows": [{
             "artist_id": 4,
             "artist_name": "Guns N Petals",
@@ -291,17 +311,18 @@ def show_artist(artist_id):
     # shows the venue page with the given venue_id
     # TODO: replace with real venue data from the venues table, using venue_id
     data1 = {
-        "id": 4,
-        "name": "Guns N Petals",
-        "genres": ["Rock n Roll"],
-        "city": "San Francisco",
-        "state": "CA",
-        "phone": "326-123-5000",
-        "website": "https://www.gunsnpetalsband.com",
-        "facebook_link": "https://www.facebook.com/GunsNPetals",
-        "seeking_venue": True,
-        "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
+        "id": 4,  # exist
+        "name": "Guns N Petals",  # exist
+        "genres": ["Rock n Roll"],  # exist
+        "city": "San Francisco",  # exist
+        "state": "CA",  # exist
+        "phone": "326-123-5000",  # exist
+        "website": "https://www.gunsnpetalsband.com",  # added
+        "facebook_link": "https://www.facebook.com/GunsNPetals",  # exist
+        "seeking_venue": True,  # added
+        "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",  # added
         "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
+        # exist
         "past_shows": [{
             "venue_id": 1,
             "venue_name": "The Musical Hop",
