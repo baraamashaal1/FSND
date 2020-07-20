@@ -16,7 +16,6 @@ from flask_migrate import Migrate
 import sys
 from datetime import date
 
-
 # ----------------------------------------------------------------------------#
 # App Config.
 # ----------------------------------------------------------------------------#
@@ -81,6 +80,7 @@ class Show(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+
 
 # ----------------------------------------------------------------------------#
 # Filters.
@@ -161,8 +161,21 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-    # TODO: shows the venue page with the given venue_id
+    # DONE: shows the venue page with the given venue_id
     venue = Venue.query.get(venue_id)
+    upcoming_shows = []
+    past_shows = []
+    for show in venue.show:
+        item = {
+            'artist_id': show.artist_id,
+            'artist_name': show.Artist.name,
+            'artist_image_link': show.Artist.image_link,
+            'start_time': str(show.start_time)
+        }
+        if show.start_time.date() >= date.today():
+            upcoming_shows.append(item)
+        else:
+            past_shows.append(item)
     # DONE: replace with real venue data from the venues table, using venue_id
     data = {
         "id": venue.id,
@@ -177,15 +190,10 @@ def show_venue(venue_id):
         "seeking_talent": venue.seeking_talent,
         "seeking_description": venue.seeking_description,
         "image_link": venue.image_link,
-        "past_shows": [{
-            "artist_id": 4,
-            "artist_name": "Guns N Petals",
-            "artist_image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
-            "start_time": "2019-05-21T21:30:00.000Z"
-        }],
-        "upcoming_shows": [],
-        "past_shows_count": 1,
-        "upcoming_shows_count": 0,
+        "past_shows": past_shows,
+        "upcoming_shows": upcoming_shows,
+        "past_shows_count": len(past_shows),
+        "upcoming_shows_count": len(upcoming_shows),
     }
 
     return render_template('pages/show_venue.html', venue=data)
