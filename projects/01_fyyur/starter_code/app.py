@@ -294,8 +294,21 @@ def search_artists():
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
     # shows the venue page with the given venue_id
-    # TODO: replace with real venue data from the venues table, using venue_id
+    # DONE: replace with real venue data from the venues table, using venue_id
     artist = Artist.query.get(artist_id)
+    upcoming_shows = []
+    past_shows = []
+    for show in artist.show:
+        item = {
+            'venue_id': show.venue_id,
+            'venue_name': show.Venue.name,
+            'venue_image_link': show.Venue.image_link,
+            'start_time': str(show.start_time)
+        }
+        if show.start_time.date() >= date.today():
+            upcoming_shows.append(item)
+        else:
+            past_shows.append(item)
     data = {
         "id": artist.id,
         "name": artist.name,
@@ -308,16 +321,10 @@ def show_artist(artist_id):
         "seeking_venue": artist.seeking_venue,
         "seeking_description": artist.seeking_description,
         "image_link": artist.image_link,
-        # exist
-        "past_shows": [{
-            "venue_id": 1,
-            "venue_name": "The Musical Hop",
-            "venue_image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60",
-            "start_time": "2019-05-21T21:30:00.000Z"
-        }],
-        "upcoming_shows": [],
-        "past_shows_count": 1,
-        "upcoming_shows_count": 0,
+        "past_shows": past_shows,
+        "upcoming_shows": upcoming_shows,
+        "past_shows_count": len(past_shows),
+        "upcoming_shows_count": len(upcoming_shows),
     }
     return render_template('pages/show_artist.html', artist=data)
 
