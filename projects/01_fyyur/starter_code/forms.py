@@ -2,9 +2,9 @@ from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, TextAreaField, IntegerField, \
     BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import DataRequired, AnyOf, URL, ValidationError
 from wtforms.fields.html5 import TelField, URLField
-
+import re
 genres_choices = [
     ('Alternative', 'Alternative'),
     ('Blues', 'Blues'),
@@ -81,6 +81,9 @@ state_choices = [
     ('WY', 'WY'),
 ]
 
+def validate_phone(form, field):
+    if not re.search(r"^[0-9]*$", field.data):
+        raise ValidationError("Invalid phone number")
 
 class ShowForm(Form):
     artist_id = StringField(
@@ -145,8 +148,8 @@ class ArtistForm(Form):
         choices=state_choices
     )
     phone = TelField(
-        # TODO implement validation logic for state
-        'phone'
+        # DONE implement validation logic for state
+        'phone', validators=[validate_phone]
     )
     image_link = URLField(
         'image_link'
