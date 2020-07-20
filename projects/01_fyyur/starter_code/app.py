@@ -113,7 +113,7 @@ def index():
 @app.route('/venues')
 def venues():
     # Done: replace with real venues data.
-    # TODO: num_shows should be aggregated based on number of upcoming shows per venue.
+    # DONE: num_shows should be aggregated based on number of upcoming shows per venue.
     all_venues = Venue.query.all()
     data = []
     places = set([])
@@ -125,15 +125,19 @@ def venues():
             lambda current_venue: current_venue.city == place[0] and current_venue.state == place[1],
             all_venues))
         for related_venue in related_venues_list:
+            num_upcoming_shows = 0
+            for show in related_venue.show:
+                if show.start_time.date() >= date.today():
+                    num_upcoming_shows += 1
             related_venues.append({
                 'id': related_venue.id,
                 'name': related_venue.name,
-                'num_upcoming_shows': 0,
+                'num_upcoming_shows': num_upcoming_shows,
             })
         place_venues = {'city': place[0], 'state': place[1],
                         'venues': related_venues}
         data.append(place_venues)
-    return render_template('pages/venues.html', areas=data);
+    return render_template('pages/venues.html', areas=data)
 
 
 @app.route('/venues/search', methods=['POST'])
