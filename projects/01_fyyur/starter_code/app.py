@@ -149,7 +149,7 @@ def search_venues():
     # seach for Hop should return "The Musical Hop".
     # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
     response = {
-        "count": len(matched_venues),
+        "count": count,
         "data": []
     }
     if count > 0:
@@ -167,6 +167,8 @@ def search_venues():
 def show_venue(venue_id):
     # DONE: shows the venue page with the given venue_id
     venue = Venue.query.get(venue_id)
+    if venue is None:
+        return render_template('errors/404.html')
     upcoming_shows = []
     past_shows = []
     for show in venue.show:
