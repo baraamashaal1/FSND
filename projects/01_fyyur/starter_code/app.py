@@ -356,7 +356,8 @@ def edit_artist(artist_id):
     # DONE: populate form with fields from artist with ID <artist_id>
     form = ArtistForm()
     artist = Artist.query.get(artist_id)
-
+    if artist is None:
+        return render_template('errors/404.html')
     form.name.data = artist.name
     form.city.data = artist.city
     form.state.data = artist.state
