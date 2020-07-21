@@ -114,9 +114,9 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = TelField(
-        'phone'
+        'phone', validators=[validate_phone]
     )
-    image_link = StringField(
+    image_link = URLField(
         'image_link'
     )
     genres = SelectMultipleField(
@@ -124,7 +124,7 @@ class VenueForm(Form):
         'genres', validators=[DataRequired()],
         choices=genres_choices
     )
-    facebook_link = StringField(
+    facebook_link = URLField(
         'facebook_link', validators=[URL()]
     )
     website = URLField(

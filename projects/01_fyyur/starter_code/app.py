@@ -219,23 +219,27 @@ def create_venue_submission():
     error = False
     try:
         # DONE: insert form data as a new Venue record in the db, instead
-        name = request.form['name']
-        city = request.form['city']
-        state = request.form['state']
-        address = request.form['address']
-        phone = request.form['phone']
-        image_link = request.form['image_link']
-        facebook_link = request.form['facebook_link']
-        website = request.form['website']
-        genres = request.form.getlist('genres')
-        seeking_talent = True if 'seeking_talent' in request.form else False
-        seeking_description = request.form['seeking_description']
-        # DONE: modify data to be the data object returned from db insertion
-        venue = Venue(name=name, city=city, state=state, address=address, phone=phone, image_link=image_link,
-                      facebook_link=facebook_link, website=website, genres=genres, seeking_talent=seeking_talent,
-                      seeking_description=seeking_description)
-        db.session.add(venue)
-        db.session.commit()
+        form = VenueForm()
+        if form.validate_on_submit():
+            name = request.form['name']
+            city = request.form['city']
+            state = request.form['state']
+            address = request.form['address']
+            phone = request.form['phone']
+            image_link = request.form['image_link']
+            facebook_link = request.form['facebook_link']
+            website = request.form['website']
+            genres = request.form.getlist('genres')
+            seeking_talent = True if 'seeking_talent' in request.form else False
+            seeking_description = request.form['seeking_description']
+            # DONE: modify data to be the data object returned from db insertion
+            venue = Venue(name=name, city=city, state=state, address=address, phone=phone, image_link=image_link,
+                          facebook_link=facebook_link, website=website, genres=genres, seeking_talent=seeking_talent,
+                          seeking_description=seeking_description)
+            db.session.add(venue)
+            db.session.commit()
+        else:
+            error = True
     except:
         error = True
         db.session.rollback()
