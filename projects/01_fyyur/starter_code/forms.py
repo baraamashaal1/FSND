@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, TextAreaField, IntegerField, \
-    BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL, ValidationError
+    BooleanField, SubmitField
+from wtforms.validators import DataRequired, AnyOf, URL, ValidationError , number_range
 from wtforms.fields.html5 import TelField, URLField
 import re
 genres_choices = [
@@ -170,5 +170,6 @@ class ArtistForm(Form):
         'seeking_venue'
     )
     seeking_description = TextAreaField('seeking_description')
+    submit = SubmitField('Create Venue')
 
 # DONE IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM

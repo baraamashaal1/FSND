@@ -375,19 +375,24 @@ def edit_artist(artist_id):
 def edit_artist_submission(artist_id):
     # DONE: take values from the form submitted, and update existing
     # artist record with ID <artist_id> using the new attributes
+    error = False
     artist = Artist.query.get(artist_id)
+    form = ArtistForm()
     try:
-        artist.name = request.form['name']
-        artist.city = request.form['city']
-        artist.state = request.form['state']
-        artist.phone = request.form['phone']
-        artist.image_link = request.form['image_link']
-        artist.facebook_link = request.form['facebook_link']
-        artist.website = request.form['website']
-        artist.genres = request.form.getlist('genres')
-        artist.seeking_venue = True if 'seeking_venue' in request.form else False
-        artist.seeking_description = request.form['seeking_description']
-        db.session.commit()
+        if form.validate_on_submit():
+            artist.name = request.form['name']
+            artist.city = request.form['city']
+            artist.state = request.form['state']
+            artist.phone = request.form['phone']
+            artist.image_link = request.form['image_link']
+            artist.facebook_link = request.form['facebook_link']
+            artist.website = request.form['website']
+            artist.genres = request.form.getlist('genres')
+            artist.seeking_venue = True if 'seeking_venue' in request.form else False
+            artist.seeking_description = request.form['seeking_description']
+            db.session.commit()
+        else:
+            error = True
     except:
         error = True
         db.session.rollback()
@@ -403,7 +408,8 @@ def edit_venue(venue_id):
     form = VenueForm()
     # DONE: populate form with values from venue with ID <venue_id>
     venue = Venue.query.get(venue_id)
-
+    if venue is None:
+        return render_template('errors/404.html')
     form.name.data = venue.name
     form.city.data = venue.city
     form.state.data = venue.state
@@ -424,19 +430,23 @@ def edit_venue_submission(venue_id):
     # Done: take values from the form submitted, and update existing
     error = False
     venue = Venue.query.get(venue_id)
+    form = VenueForm()
     try:
-        venue.name = request.form['name']
-        venue.city = request.form['city']
-        venue.state = request.form['state']
-        venue.address = request.form['address']
-        venue.phone = request.form['phone']
-        venue.image_link = request.form['image_link']
-        venue.facebook_link = request.form['facebook_link']
-        venue.website = request.form['website']
-        venue.genres = request.form.getlist('genres')
-        venue.seeking_talent = True if 'seeking_talent' in request.form else False
-        venue.seeking_description = request.form['seeking_description']
-        db.session.commit()
+        if form.validate_on_submit():
+            venue.name = request.form['name']
+            venue.city = request.form['city']
+            venue.state = request.form['state']
+            venue.address = request.form['address']
+            venue.phone = request.form['phone']
+            venue.image_link = request.form['image_link']
+            venue.facebook_link = request.form['facebook_link']
+            venue.website = request.form['website']
+            venue.genres = request.form.getlist('genres')
+            venue.seeking_talent = True if 'seeking_talent' in request.form else False
+            venue.seeking_description = request.form['seeking_description']
+            db.session.commit()
+        else:
+            error = True
     except:
         error = True
         db.session.rollback()
@@ -461,23 +471,27 @@ def create_artist_submission():
     # called upon submitting the new artist listing form
     # DONE: insert form data as a new Venue record in the db, instead
     error = False
+    form = ArtistForm()
     try:
-        name = request.form['name']
-        city = request.form['city']
-        state = request.form['state']
-        phone = request.form['phone']
-        image_link = request.form['image_link']
-        facebook_link = request.form['facebook_link']
-        website = request.form['website']
-        genres = request.form.getlist('genres')
-        seeking_venue = True if 'seeking_venue' in request.form else False
-        seeking_description = request.form['seeking_description']
-        # DONE: modify data to be the data object returned from db insertion
-        artist = Artist(name=name, city=city, state=state, phone=phone, image_link=image_link,
-                        facebook_link=facebook_link, website=website, genres=genres, seeking_venue=seeking_venue,
-                        seeking_description=seeking_description)
-        db.session.add(artist)
-        db.session.commit()
+        if form.validate_on_submit():
+            name = request.form['name']
+            city = request.form['city']
+            state = request.form['state']
+            phone = request.form['phone']
+            image_link = request.form['image_link']
+            facebook_link = request.form['facebook_link']
+            website = request.form['website']
+            genres = request.form.getlist('genres')
+            seeking_venue = True if 'seeking_venue' in request.form else False
+            seeking_description = request.form['seeking_description']
+            # DONE: modify data to be the data object returned from db insertion
+            artist = Artist(name=name, city=city, state=state, phone=phone, image_link=image_link,
+                            facebook_link=facebook_link, website=website, genres=genres, seeking_venue=seeking_venue,
+                            seeking_description=seeking_description)
+            db.session.add(artist)
+            db.session.commit()
+        else:
+            error = True
     except:
         error = True
         db.session.rollback()
@@ -530,13 +544,17 @@ def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
     # DONE: insert form data as a new Show record in the db, instead
     error = False
+    form = ShowForm()
     try:
-        artist_id = int(request.form['artist_id'])
-        venue_id = int(request.form['venue_id'])
-        start_time = request.form['start_time']
-        show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
-        db.session.add(show)
-        db.session.commit()
+        if form.validate_on_submit():
+            artist_id = int(request.form['artist_id'])
+            venue_id = int(request.form['venue_id'])
+            start_time = request.form['start_time']
+            show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
+            db.session.add(show)
+            db.session.commit()
+        else:
+            error = True
     except:
         error = True
         db.session.rollback()
