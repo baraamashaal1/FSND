@@ -311,9 +311,11 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-    # shows the venue page with the given venue_id
-    # DONE: replace with real venue data from the venues table, using venue_id
+    # shows the artist page with the given venue_id
+    # DONE: replace with real artist data from the artists table, using artist_id
     artist = Artist.query.get(artist_id)
+    if artist is None:
+        return render_template('errors/404.html')
     upcoming_shows = []
     past_shows = []
     for show in artist.show:
