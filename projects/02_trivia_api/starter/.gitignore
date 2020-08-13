@@ -12,5 +12,7 @@ venv
 ehthumbs.db
 Thumbs.db
 
-node_modules
-.idea
+backend/venv
+backend/.idea
+frontend/.idea
+frontend/node_modules

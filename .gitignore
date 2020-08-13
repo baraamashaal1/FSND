@@ -11,3 +11,9 @@ venv
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# 02_trivia_api
+projects/02_trivia_api/starter/frontend/node_modules
+projects/02_trivia_api/starter/frontend/.idea
+projects/02_trivia_api/starter/backend/.idea
+projects/02_trivia_api/starter/backend/venv
