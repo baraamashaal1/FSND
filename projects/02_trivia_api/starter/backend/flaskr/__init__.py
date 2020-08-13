@@ -3,7 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-
+from sqlalchemy import not_, func
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
@@ -116,6 +116,7 @@ def create_app(test_config=None):
 
             return jsonify({
                 'success': True,
+                'question_id': id,
                 'message': "Question successfully deleted"
             }), 200
         except:
@@ -251,28 +252,33 @@ def create_app(test_config=None):
             if (quiz_category is None) or (previous_questions is None):
                 abort(400)
 
-            if quiz_category['id'] == 0:
-                questions = Question.query.all()
-            else:
-                questions = Question.query.filter_by(
-                    category=quiz_category['id']).all()
+            questions = Question.query
 
-            def is_asked_before(question):
-                if question.id not in previous_questions:
-                    return True
+            if quiz_category['id'] != 0:
+                questions = questions.filter_by(
+                    category=quiz_category['id'])
 
-            new_questions = list(filter(is_asked_before, questions))
+            questions = questions.filter(not_(Question.id.in_(previous_questions)))
 
-            next_question = new_questions[random.randint(0, len(new_questions) - 1)]
+            question = questions.order_by(func.random()).first()
+
+            question_dict = {
+                'id': question.id,
+                'question': question.question,
+                'answer': question.answer,
+                'category': question.category,
+                'difficulty': question.difficulty
+            }
+
+            total_questions = len(questions.all())
 
             return jsonify({
                 'success': True,
-                'question': next_question.format(),
-                'totalQuestions': len(questions)
+                'question': question_dict,
+                'totalQuestions': total_questions
             }), 200
 
         except:
-
             abort(422)
 
     '''
