@@ -157,6 +157,7 @@ def create_app(test_config=None):
 
             return jsonify({
                 'success': True,
+                'question_id': question.id,
                 'message': 'Question successfully created!'
             }), 200
 
